@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import connection from "../config/sequelize.js";
 import User from "./User.js"; //importo el modelo con el que se relaciona
 
-const Objects = connection.define(
+const Object = connection.define(
   "Object",
   {
     object_id: {
@@ -17,17 +17,17 @@ const Objects = connection.define(
     },
     object_description: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
     },
     object_img: {
       type: DataTypes.STRING(255),
-      allowNull: true, // Schema allows NULL
+      allowNull: false, 
     },
     object_state: {
-      // Missing field from schema
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
+        type: DataTypes.ENUM('Disponible', 'Reservado'),
+        allowNull: false,
+        defaultValue: 'Reservado',
+      },
     object_donor_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,

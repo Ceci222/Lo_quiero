@@ -15,8 +15,8 @@ const Pickup = connection.define(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: Objects,
-        key: "object_id",
+        model: Objects, //indico que se relaciona con la tabla object
+        key: "object_id", //es la columna en la tabla referenciada que actúa como clave primaria
       },
     },
     pickup_area: {

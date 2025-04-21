@@ -26,7 +26,7 @@ const connection = new Sequelize(
 
 async function testConnection() {
     try {
-        await connection.authenticate();
+        await connection.authenticate(); //connection.authenticate(); método predefinido de sequelize
         console.log('Conexión con MySQL hecha.');
     } catch (error) {
         console.error('Imposible conectarse a la base de datos:', error);

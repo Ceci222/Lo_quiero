@@ -47,7 +47,7 @@ const Object = connection.define(
   },
 );
 
-Objects.belongsTo(User, { as: "Donor", foreignKey: "object_donor_id" }); // Correct foreign key name
-Objects.belongsTo(User, { as: "Recipient", foreignKey: "object_recipient_id" }); // Correct foreign key name
+Objects.belongsTo(User, { as: "Donor", foreignKey: "object_donor_id" });
+Objects.belongsTo(User, { as: "Recipient", foreignKey: "object_recipient_id" }); 
 
 export default Objects;

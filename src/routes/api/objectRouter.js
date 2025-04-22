@@ -7,7 +7,7 @@ router.get("/", objectApiController.getAll);   //TODO: indicar la ruta en app.js
 
 router.get("/:id",objectApiController.getByID);
 
-router.post("/",objectApiController.create); //sin ;id, no lo va a tomar de los params pq se genera automáticamente
+router.post("/",objectApiController.create); //sin :id, no lo va a tomar de los params pq se genera automáticamente
 
 router.put("/:id",objectApiController.update);
 

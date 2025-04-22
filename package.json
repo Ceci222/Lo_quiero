@@ -2,10 +2,10 @@
   "name": "lo_quiero",
   "version": "1.0.0",
   "description": "Aplicación para conectar a personas que quieran donar objetos que ya no ncecesitan con otras que estén dispuestas a pasarlos a retirar",
-  "main": "src/index.js",
+  "main": "src/app/app.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon src/index.js",
+    "start": "nodemon src/app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

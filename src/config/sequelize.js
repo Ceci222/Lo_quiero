@@ -35,4 +35,6 @@ async function testConnection() {
 
 testConnection();
 
+await connection.sync({ force: true });
+
 export default connection;

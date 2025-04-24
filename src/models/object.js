@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
 import connection from "../config/sequelize.js";
-import User from "./user.js"; //importo el modelo con el que se relaciona
+import user from "./user.js"; //importo el modelo (por eso en minus)con el que se relaciona
 
 const Object = connection.define(
-  "Object",
+  "object",
   {
     object_id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -32,7 +32,7 @@ const Object = connection.define(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: User,
+        model: user,
         key: "user_id",
       },
     },
@@ -40,14 +40,14 @@ const Object = connection.define(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
-        model: User,
+        model: user,
         key: "user_id",
       },
     },
   },
 );
 
-Object.belongsTo(User, { as: "Donor", foreignKey: "object_donor_id" });
-Object.belongsTo(User, { as: "Recipient", foreignKey: "object_recipient_id" }); 
+Object.belongsTo(user, { as: "Donor", foreignKey: "object_donor_id" });
+Object.belongsTo(user, { as: "Recipient", foreignKey: "object_recipient_id" }); 
 
 export default Object;

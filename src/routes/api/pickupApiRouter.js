@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", pickupApiController.getAll);
 
-router.get("/:id", pickupApiController.getByID); 
+router.get("/:id", pickupApiController.getById); 
 
 router.post("/", pickupApiController.create); 
 

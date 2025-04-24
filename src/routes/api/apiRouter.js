@@ -1,8 +1,9 @@
 import { Router } from "express";
-import userRouter from "./userRouter.js";
+/* import userRouter from "./userRouter.js";
 import objectRouter from "./objectRouter.js";
-import pickupRouter from "./pickupRouter.js";
-import authRouter from "./authRouter.js";
+import authRouter from "./authRouter.js"; */
+import pickupApiRouter from "./pickupApiRouter.js";
+
  
 const router = Router();
 
@@ -10,9 +11,9 @@ router.get("/", (req, res) => {
     res.send("Testing app");
 })
 
-router.use("/user", userRouter);
-router.use("/object",objectRouter);
-router.use("/pickup", pickupRouter);
-router.use("/", authRouter);
-
+/* router.use("/user", userApiRouter);
+router.use("/object",objectApiRouter); */
+router.use("/pickup", pickupApiRouter);
+/* router.use("/", authApiRouter);
+ */
 export default router;

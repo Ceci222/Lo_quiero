@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import connection from "../config/sequelize.js";
-import Objects from "./Objects.js"; // Import Objects for association
+import Object from "./object.js"; 
 
 const Pickup = connection.define(
   "Pickup",
@@ -15,7 +15,7 @@ const Pickup = connection.define(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: Objects, //indico que se relaciona con la tabla object
+        model: Object, //indico que se relaciona con la tabla object
         key: "object_id", //es la columna en la tabla referenciada que actúa como clave primaria
       },
     },
@@ -34,6 +34,6 @@ const Pickup = connection.define(
   },
 );
 
-Pickup.belongsTo(Objects, { foreignKey: "pickup_object_id" }); 
+Pickup.belongsTo(Object, { foreignKey: "pickup_object_id" }); 
 
 export default Pickup; 

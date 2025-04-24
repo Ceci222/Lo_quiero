@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import connection from "../config/sequelize.js";
-import User from "./User.js"; //importo el modelo con el que se relaciona
+import User from "./user.js"; //importo el modelo con el que se relaciona
 
 const Object = connection.define(
   "Object",
@@ -47,7 +47,7 @@ const Object = connection.define(
   },
 );
 
-Objects.belongsTo(User, { as: "Donor", foreignKey: "object_donor_id" });
-Objects.belongsTo(User, { as: "Recipient", foreignKey: "object_recipient_id" }); 
+Object.belongsTo(User, { as: "Donor", foreignKey: "object_donor_id" });
+Object.belongsTo(User, { as: "Recipient", foreignKey: "object_recipient_id" }); 
 
-export default Objects;
+export default Object;

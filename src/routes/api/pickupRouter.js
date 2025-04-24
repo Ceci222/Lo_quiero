@@ -1,5 +1,5 @@
 import express from 'express';
-/*TODO: importar aquí el controller correspondiente */
+import pickupApiController from "../../controllers/pickups/pickupApiController.js"  //importo el que interactúa con el cliente, no el de lógica
 
 const router = express.Router();
 
@@ -9,8 +9,8 @@ router.get("/:id", pickupApiController.getByID);
 
 router.post("/", pickupApiController.create); 
 
-router.put("/:id", pickupApiController.update);
+router.put("/:id", pickupApiController.edit);
 
-router.delete("/:id", pickupApiController.delete);
+router.delete("/:id", pickupApiController.remove);
 
 export default router;

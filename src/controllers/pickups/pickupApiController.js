@@ -45,8 +45,8 @@ async function getById(req, res) {
 async function edit(req, res) {
     try {
         const id = req.params.id; 
-        const response = await pickupController.edit(id, req.body);
-        res.json(response);
+        const result = await pickupController.edit(id, req.body);
+        res.json(result);
 
     } catch (error) {
         console.error(error);

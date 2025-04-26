@@ -1,10 +1,10 @@
 import Pickup from '../../models/pickup.js';
-import Object from '../../models/object.js';
+import ObjectModel from '../../models/object.js';
 
 async function getAll() {
     try {
         const pickups = await Pickup.findAll({
-            include: [Object]
+            include: [ObjectModel]
         });
 
         if (!pickups || pickups.length === 0) { //la consulta puede devolver un array vacío, y ya no sería null
@@ -23,10 +23,10 @@ async function getAll() {
 async function getById(id) {
     try {
         const pickup = await Pickup.findByPk(id, {
-            include: [Object]
+            include: [ObjectModel]
         });
         if (!pickup) { //si no se encuentra o es null
-            throw new Error('Id no encontrado');
+            throw new Error('Recogida no encontrada');
             
         }
         return pickup;
@@ -38,20 +38,20 @@ async function getById(id) {
 
 async function create(data) { //Este es el controlador lógico, estoy creando una función q lo q hace es verificar q los datos recibe cumplan con esas comprobaciones, o de lo contrario lancen esos errores.
     if (!data.pickup_area) {
-        throw new Error('Área de recogida no disponible');
+        throw new Error('Debe indicar el área de recogida');
     }
     if (!data.pickup_start_date) {
-        throw new Error('Fecha inicial de recogida no disponible');
+        throw new Error('Debe indicar la fecha incial de recogida');
     }
     if (!data.pickup_end_date) {
-        throw new Error('Fecha final de recogida no disponible');
+        throw new Error('Debe indicar la fecha final de recogida');
     }
     if (!data.pickup_object_id) {
-        throw new Error('Object ID no disponible');
+        throw new Error('Falta la referencia del objeto a recoger');
     }
 
     // Verifico que el objeto exista pq lo voy a necesitar luego
-    const object = await Object.findByPk(data.pickup_object_id);
+    const object = await ObjectModel.findByPk(data.pickup_object_id);
     if (!object) {
         throw new Error('Object no encontrado');
     }
@@ -61,7 +61,7 @@ async function create(data) { //Este es el controlador lógico, estoy creando un
 
     // Asocio el Pickup recién creado con el objeto anterior usando include
     const fullPickup = await Pickup.findByPk(newPickup.pickup_id, {
-        include: [Object]
+        include: [ObjectModel]
     });
 
     return fullPickup;
@@ -85,7 +85,7 @@ async function edit(id, data) {
         
         const pickup = await Pickup.findByPk(id);
         if (!pickup) {
-            throw new Error('Pickup no encontrado');
+            throw new Error('Información de recogida no encontrada');
         }
         const result = await Pickup.update(data, {
             where: { pickup_id: id }

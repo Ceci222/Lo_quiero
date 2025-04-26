@@ -1,13 +1,13 @@
 import User from "../../models/user.js"
-import Object from "../../models/object.js"
+import ObjectModel from "../../models/object.js"
 import Pickup from "../../models/pickup.js"
 
 async function getAll(){
     try {
         const users = await User.findAll({
             include: [
-                { model: Object, as: 'DonatedObjects', include: [{ model: Pickup, as: 'Pickup' }] },
-                { model: Object, as: 'ReceivedObjects', include: [{ model: Pickup, as: 'Pickup' }] }
+                { model: ObjectModel, as: 'DonatedObjects', include: [{ model: Pickup, as: 'Pickup' }] },
+                { model: ObjectModel, as: 'ReceivedObjects', include: [{ model: Pickup, as: 'Pickup' }] }
             ]
         });
         if (users.length === 0) {
@@ -24,8 +24,8 @@ async function getAll(){
 async function getById(id) {
     const user = await User.findByPk(id, {
         include: [
-            { model: Object, as: 'DonatedObjects', include: [{ model: Pickup, as: 'Pickup' }] },
-            { model: Object, as: 'ReceivedObjects', include: [{ model: Pickup, as: 'Pickup' }] }
+            { model: ObjectModel, as: 'DonatedObjects', include: [{ model: Pickup, as: 'Pickup' }] },
+            { model: ObjectModel, as: 'ReceivedObjects', include: [{ model: Pickup, as: 'Pickup' }] }
         ] //debo usar esta sintáxis pq hay dos realciones con la misma tabla y para diferenciarlas hace falta un alias, no es una asociacion simple con dos tablas diferentes
     });
     if (!user) throw new Error('Usuario no encontrado');
@@ -44,8 +44,8 @@ async function edit(id, data) {
 
     return await User.findByPk(id, { //para devolver el usuario actualizado
         include: [
-            { model: Object, as: 'DonatedObjects', include: [{ model: Pickup, as: 'Pickup' }] },
-            { model: Object, as: 'ReceivedObjects', include: [{ model: Pickup, as: 'Pickup' }] }
+            { model: ObjectModel, as: 'DonatedObjects', include: [{ model: Pickup, as: 'Pickup' }] },
+            { model: ObjectModel, as: 'ReceivedObjects', include: [{ model: Pickup, as: 'Pickup' }] }
         ]
     });
 }

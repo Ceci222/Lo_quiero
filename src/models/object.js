@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import connection from '../config/sequelize.js';
 
-const Object = connection.define('object', {
+const ObjectModel = connection.define('object', {
     object_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
@@ -43,4 +43,4 @@ const Object = connection.define('object', {
     },
 });
 
-export default Object;
+export default ObjectModel;

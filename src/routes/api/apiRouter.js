@@ -1,7 +1,7 @@
 import { Router } from "express";
 import userApiRouter from "./userApiRouter.js";
 import objectApiRouter from "./objectApiRouter.js";
-/*import authRouter from "./authRouter.js"; */
+import authApiRouter from "./authApiRouter.js"; 
 import pickupApiRouter from "./pickupApiRouter.js";
 
  
@@ -14,6 +14,6 @@ router.get("/", (req, res) => {
 router.use("/user", userApiRouter);
 router.use("/object",objectApiRouter);
 router.use("/pickup", pickupApiRouter);
-/* router.use("/", authApiRouter);
- */
+router.use("/", authApiRouter);
+
 export default router;

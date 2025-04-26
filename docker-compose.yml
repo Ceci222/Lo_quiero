@@ -11,7 +11,7 @@ services:
     depends_on: 
       mysql_lq:
         condition: service_healthy
-  mysql:
+  mysql_lq:
     container_name: ${DB_HOST}
     image: mysql:8.0
     restart: unless-stopped

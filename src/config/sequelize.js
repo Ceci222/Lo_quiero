@@ -35,6 +35,17 @@ async function testConnection() {
 
 testConnection();
 
-await connection.sync({ force: true });
+setTimeout(async () => {
+    try {
+      await connection.authenticate();
+      console.log('Conexión con MySQL hecha.');
+  
+      await connection.sync({ force: false }); 
+      console.log('Base de datos sincronizada.');
+  
+    } catch (error) {
+      console.error('Error al conectar o sincronizar la base de datos:', error);
+    }
+  }, 10000); // Espera 5 segundos antes de ejecutar todo
 
 export default connection;

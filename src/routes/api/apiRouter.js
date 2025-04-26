@@ -1,6 +1,6 @@
 import { Router } from "express";
-/* import userRouter from "./userRouter.js";
-import objectRouter from "./objectRouter.js";
+import userApiRouter from "./userApiRouter.js";
+/*import objectRouter from "./objectRouter.js";
 import authRouter from "./authRouter.js"; */
 import pickupApiRouter from "./pickupApiRouter.js";
 
@@ -11,8 +11,8 @@ router.get("/", (req, res) => {
     res.send("Testing app");
 })
 
-/* router.use("/user", userApiRouter);
-router.use("/object",objectApiRouter); */
+router.use("/user", userApiRouter);
+/*router.use("/object",objectApiRouter); */
 router.use("/pickup", pickupApiRouter);
 /* router.use("/", authApiRouter);
  */

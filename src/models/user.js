@@ -25,4 +25,5 @@ const User = connection.define("user",
   },
 });
 
-export default User;
+
+export default User; 

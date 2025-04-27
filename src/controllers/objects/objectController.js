@@ -85,15 +85,33 @@ async function edit(id, data) {
     try {
         const object = await ObjectModel.findByPk(id);
         if (!object) throw new Error('Objeto no encontrado');
-        await object.update(data);
-        if (data.pickup) {
-            await Pickup.update(data.pickup, { where: { pickup_object_id: id } });
+
+        const allowedFields = [
+            "object_name",
+            "object_description",
+            "object_img",
+            "object_state",
+            "object_donor_id",
+            "object_recipient_id"
+        ];
+        
+        const invalidFields = Object.keys(data).filter(
+        key => !allowedFields.includes(key)
+        );
+        
+        if (invalidFields.length > 0) {
+            const error = new Error(`Campos inválidos: ${invalidFields.join(", ")}`);
+            error.statusCode = 400;
+            throw error;
         }
+
+        await object.update(data);
+
         return await ObjectModel.findByPk(id, {
             include: [
                 { model: User, as: 'Donor' },
                 { model: User, as: 'Recipient' },
-                { model: Pickup, as: 'Pickup' }
+                { model: Pickup, as: 'Pickup' } 
             ]
         });
     } catch (error) {
@@ -103,10 +121,19 @@ async function edit(id, data) {
 
 
 async function remove(id) {
-    const response = await ObjectModel.destroy({
-        where: { object_id: id }   
-    });
-    return response;
+    try {
+        const response = await ObjectModel.destroy({
+            where: { object_id: id }
+        });
+        if (response === 0) {
+            const error = new Error('Id no encontrado');
+            error.statusCode = 404;
+            throw error;
+        }
+        return response;
+    } catch (error) {
+        throw error; // Envío el error al controlador API
+    }
 }
 
 export default {

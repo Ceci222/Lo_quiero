@@ -5,7 +5,8 @@ async function register(req, res) {
         const user = await authController.register(req.body);
         res.status(201).json(user);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message }); 
     }
 }
 
@@ -14,7 +15,8 @@ async function login(req, res) {
         const result = await authController.login(req.body);
         res.status(200).json(result);
     } catch (error) {
-        res.status(401).json({ error: error.message });
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message }); 
     }
 }
 

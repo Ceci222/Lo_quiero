@@ -1,5 +1,5 @@
 import express from 'express';
-import objectApiController from '../../controllers/object/objectApiController.js';
+import objectApiController from '../../controllers/objects/objectApiController.js';
 
 const router = express.Router();
 

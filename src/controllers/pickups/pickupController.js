@@ -99,8 +99,9 @@ async function edit(id, data) {
 
 async function remove(id) {
     const response = await Pickup.destroy({
-        where: { pickup_id: id } //no hace falta el try=catch, lo peor q puede pasar es que no se borre y lanzará error de por sí
+        where: { pickup_id: id } 
     });
+    if (!response) throw new Error('Recogida no encontrada');
     return response;
 }
 

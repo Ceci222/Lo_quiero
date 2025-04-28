@@ -257,7 +257,7 @@ Obtiene todos los objetos.
         "object_name": "Libro",
         "object_description": "Una novela",
         "object_img": "url",
-        "object_state": "Bueno",
+        "object_state": "",
         "Donor": { "user_id": 1, "user_name": "juan" },
         "Recipient": null,
         "Pickup": null
@@ -286,7 +286,7 @@ Obtiene un objeto por ID.
       "object_name": "Libro",
       "object_description": "Una novela",
       "object_img": "url",
-      "object_state": "Bueno",
+      "object_state": "Disponible",
       "Donor": { "user_id": 1, "user_name": "juan" },
       "Recipient": null,
       "Pickup": null
@@ -323,7 +323,7 @@ Crea un nuevo objeto.
       "object_name": "Libro",
       "object_description": "Una novela",
       "object_img": "url",
-      "object_state": "Bueno",
+      "object_state": "Reservado", //sólo admite "Disponible" o "Reservado"
       "Donor": { "user_id": 1, "user_name": "juan" },
       "Recipient": null
     }
@@ -348,9 +348,10 @@ Actualiza un objeto.
     "object_name": "string",
     "object_description": "string",
     "object_img": "string",
-    "object_state": "string" //debería ser object_condition, a modificar para futuras actualizaciones
+    "object_state": "string" //admite "Disponible" o "Reservado"
+    
     //pickup se devuelve pero no admite actualizaciones desde este endpoint
-    }
+    
   }
   ```
 - **Respuestas**:
@@ -361,7 +362,7 @@ Actualiza un objeto.
       "object_name": "Libro",
       "object_description": "Una novela",
       "object_img": "url",
-      "object_state": "Bueno", //debería ser object_condition, a modificar para futuras actualizaciones
+      "object_state": "Disponible", 
       "Donor": { "user_id": 1, "user_name": "juan" },
       "Recipient": null,
       "Pickup": null

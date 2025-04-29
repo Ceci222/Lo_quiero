@@ -2,6 +2,12 @@
 
 ## Descripción General
 
+Inspirada en el grupo de facebook "Si lo venís a buscar es tuyo".
+
+El objetivo de esta API es promover la economía circular y facilitar el intercambio gratuito de objetos entre personas, promoviendo la reutilización y reduciendo residuos. 
+
+A través de esta plataforma, los usuarios pueden ofrecer artículos que ya no necesitan y donar objetos a otros de manera sencilla y accesible.
+
 Esta API gestiona usuarios, objetos y recogidas para una plataforma de donaciones. 
 
 Está desarrollada con Express.js, sequelize para realizar las consultas a la base de datos y JWT para la autenticación. Aún no se encuentra desplegada, por lo que se ejecuta localmente con Docker.

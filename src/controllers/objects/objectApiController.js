@@ -1,5 +1,6 @@
 import objectController from "./objectController.js";
 
+
 async function getAll(req, res) {
     try {
         const objects = await objectController.getAll();
@@ -25,7 +26,7 @@ async function getById(req, res) {
 
 async function create(req, res) {
     try {
-        const result = await objectController.create(req.body); //de ahí coge los args
+        const result = await objectController.create(req.body, req.user.user_id); //de ahí coge los args
         res.json(result);
     } catch (error) {
         console.error(error);
@@ -40,8 +41,8 @@ async function create(req, res) {
 
 async function edit(req, res) {
     try {
-        const id = req.params.id;
-        const object = await objectController.edit(id, req.body);
+        const object_id = req.params.id;
+        const object = await objectController.edit(object_id, req.body, req.user.user_id); //req.user.user_id debe coincidir con el middleware
         res.json(object);
     } catch (error) {
         console.error(error);

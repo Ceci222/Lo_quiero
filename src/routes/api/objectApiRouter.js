@@ -1,5 +1,6 @@
 import express from 'express';
 import objectApiController from '../../controllers/objects/objectApiController.js';
+import isLoggedInAPI from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -7,9 +8,9 @@ router.get("/", objectApiController.getAll);   //TODO: indicar la ruta en app.js
 
 router.get("/:id",objectApiController.getById);
 
-router.post("/",objectApiController.create); //sólo indicar la ruta que lleva a la función que tiene que usar
+router.post("/", isLoggedInAPI, objectApiController.create); //sólo indicar la ruta que lleva a la función que tiene que usar
 
-router.put("/:id",objectApiController.edit);
+router.put("/:id",isLoggedInAPI, objectApiController.edit);
 
 router.delete("/:id",objectApiController.remove);
 

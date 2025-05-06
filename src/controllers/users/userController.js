@@ -124,3 +124,6 @@ export default {
     getAll,
     getProfile
 };
+
+//Que el user no pueda aceptar su propia donación
+//Que un user no pueda modificar el objeto o la recogida de otro

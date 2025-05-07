@@ -2,6 +2,7 @@ import Pickup from '../../models/pickup.js';
 import User from '../../models/user.js';
 import ObjectModel from '../../models/object.js';
 import { UserPermissionDenied } from '../../utils/errors.js';
+import connection from '../../config/sequelize.js';
 
 
 async function getAll() {
@@ -44,40 +45,72 @@ async function getById(id) {
     }
 }
 
-async function create(data, user_id) { 
-    if (!data.object_name) {
-        throw new Error('Indique de qué objeto se trata');
+
+
+async function create(data, user_id) {
+    try {
+        if (!data.object_name) {
+            const error = new Error('Indique de qué objeto se trata');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (!data.object_description) {
+            const error = new Error('Falta descripción del objeto');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (!data.object_img) {
+            const error = new Error('Hace falta una imagen del objeto');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (!data.pickup_area) {
+            const error = new Error('Debe indicar el área de recogida');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (!data.pickup_start_date) {
+            const error = new Error('Debe indicar la fecha inicial de recogida');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (!data.pickup_end_date) {
+            const error = new Error('Debe indicar la fecha final de recogida');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        //transaction para poder ejecutar dos crete a la vez
+        const result = await connection.transaction(async (t) => {//transaction: conjunto de operaciones. Todas deben completarse correctamente, o ninguna se aplica
+            const object = await ObjectModel.create({ //esa (t) para indicar que forman parte de la misma transacción. Si una falla, Sequelize revierte todo.
+                object_name: data.object_name,
+                object_description: data.object_description,
+                object_img: data.object_img,
+                object_state: 'Disponible',
+                object_donor_id: user_id,
+                object_recipient_id: null
+            }, { transaction: t });
+
+            await Pickup.create({
+                pickup_area: data.pickup_area,
+                pickup_start_date: data.pickup_start_date,
+                pickup_end_date: data.pickup_end_date,
+                pickup_object_id: object.object_id
+            }, { transaction: t });
+
+            return object;
+        });
+
+        return await ObjectModel.findByPk(result.object_id, {
+            include: [
+                { model: User, as: 'Donor', attributes: { exclude: ['user_pwd'] } },
+                { model: User, as: 'Recipient', attributes: { exclude: ['user_pwd'] } },
+                { model: Pickup, as: 'Pickup' }
+            ]
+        });
+    } catch (error) {
+        throw error;
     }
-    if (!data.object_description) {
-        throw new Error('Falta descripción del objeto');
-    }
-    if (!data.object_img) {
-        throw new Error('Hace falta una imagen del objeto');
-    }
-
-    if (!user_id) {
-        throw new Error('Usuario no autenticado');
-    }
-
-    const objectData = {
-        object_name: data.object_name,
-        object_description: data.object_description,
-        object_img: data.object_img,
-        object_state: 'Disponible',
-        object_donor_id: user_id, 
-        object_recipient_id: null 
-    };
-
-    const newObject = await ObjectModel.create(objectData); //variable interna en la que s eva a almacenar la info
-
-    const fullObject = await ObjectModel.findByPk(newObject.object_id, { //buscar en la db y devolver
-        include: [
-            { model: User, as: 'Donor' },
-            { model: User, as: 'Recipient' }
-        ]
-    });
-
-    return fullObject;
 }
 
 

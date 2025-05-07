@@ -26,6 +26,13 @@ class UserEmailAlreadyExists extends Error {
     }
 }
 
+class UserNameAlreadyExists extends Error {
+    constructor() {
+        super('El usuario ya está registrado');
+        this.statusCode = 400;
+    }
+}
+
 class UserInvalidCredentials extends Error {
     constructor() {
         super('Credenciales incorrectas');
@@ -55,5 +62,6 @@ export {
     UserEmailAlreadyExists,
     UserInvalidCredentials,
     UserNotFound,
-    UserPermissionDenied
+    UserPermissionDenied, 
+    UserNameAlreadyExists
 };

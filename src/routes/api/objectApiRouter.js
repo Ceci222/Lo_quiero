@@ -10,6 +10,8 @@ router.get("/:id",objectApiController.getById);
 
 router.post("/", isLoggedInAPI, objectApiController.create); //sólo indicar la ruta que lleva a la función que tiene que usar
 
+router.post("/:id/accept", isLoggedInAPI, objectApiController.accept);
+
 router.put("/:id",isLoggedInAPI, objectApiController.edit);
 
 router.delete("/:id", isLoggedInAPI, objectApiController.remove);

@@ -192,10 +192,42 @@ async function remove(id, user_id) {
     }
 }
 
+async function accept(object_id, user_id) {
+    try {
+        const object = await ObjectModel.findByPk(object_id);
+        if (!object) {
+            const error = new Error('Objeto no encontrado');
+            error.statusCode = 404;
+            throw error;
+        }
+        if (object.object_state !== 'Disponible' || object.object_recipient_id !== null) {
+            const error = new Error('Objeto no disponible');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (user_id === object.object_donor_id) {
+            const error = new Error('El donante no puede ser beneficiario');
+            error.statusCode = 403;
+            throw error;
+        }
+        await object.update({ object_recipient_id: user_id, object_state: 'Reservado' });
+        return await ObjectModel.findByPk(object_id, {
+            include: [
+                { model: User, as: 'Donor', attributes: { exclude: ['user_pwd'] } },
+                { model: User, as: 'Recipient', attributes: { exclude: ['user_pwd'] } },
+                { model: Pickup, as: 'Pickup' }
+            ]
+        });
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     getAll,
     getById,
     create,
     edit,
-    remove
+    remove,
+    accept
 };

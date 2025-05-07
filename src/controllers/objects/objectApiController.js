@@ -39,6 +39,17 @@ async function create(req, res) {
      
 }
 
+async function accept(req, res) {
+    try {
+        const object_id = req.params.id; //pq lo necesito del endpoint
+        const result = await objectController.accept(object_id, req.user.user_id);
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message });
+    }
+}
+
 async function edit(req, res) {
     try {
         const object_id = req.params.id;
@@ -78,5 +89,6 @@ export default {
     getById,
     create,
     edit,
-    remove
+    remove,
+    accept
 };

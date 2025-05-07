@@ -7,7 +7,8 @@ import {
     UserEmailNotProvided,
     UserPasswordNotProvided,
     UserEmailAlreadyExists,
-    UserInvalidCredentials
+    UserInvalidCredentials,
+    UserNameAlreadyExists
 } from '../../utils/errors.js';
 
 

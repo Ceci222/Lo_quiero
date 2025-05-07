@@ -12,6 +12,6 @@ router.post("/", isLoggedInAPI, objectApiController.create); //sólo indicar la 
 
 router.put("/:id",isLoggedInAPI, objectApiController.edit);
 
-router.delete("/:id",objectApiController.remove);
+router.delete("/:id", isLoggedInAPI, objectApiController.remove);
 
 export default router;

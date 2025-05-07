@@ -59,7 +59,7 @@ async function edit(req, res) {
 async function remove(req, res) {
     try {
         const id = req.params.id //asocio la request al id
-        const result = await objectController.remove(id);
+        const result = await objectController.remove(id, req.user.user_id);
         res.json(result);
     } catch (error) {
         console.error(error);
@@ -71,6 +71,7 @@ async function remove(req, res) {
     }
 
 }
+
 
 export default {
     getAll,

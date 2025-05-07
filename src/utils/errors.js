@@ -33,6 +33,13 @@ class UserInvalidCredentials extends Error {
     }
 }
 
+class UserPermissionDenied extends Error {
+    constructor() {
+        super('No tiene permiss para realizar esta acción');
+        this.statusCode = 403;
+    }
+}
+
 class UserNotFound extends Error {
     constructor() {
         super('Usuario no encontrado');
@@ -47,5 +54,6 @@ export {
     UserPasswordNotProvided,
     UserEmailAlreadyExists,
     UserInvalidCredentials,
-    UserNotFound
+    UserNotFound,
+    UserPermissionDenied
 };

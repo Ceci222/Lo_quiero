@@ -1,6 +1,7 @@
 import Pickup from '../../models/pickup.js';
 import User from '../../models/user.js';
 import ObjectModel from '../../models/object.js';
+import { UserPermissionDenied } from '../../utils/errors.js';
 
 
 async function getAll() {
@@ -93,6 +94,7 @@ async function edit(id, data, user_id) {
         }
 
         if (user_id !== object.object_donor_id) { //importante: lo que compara es el param de jwt con el campo delmodelo del objeto, por eso no es user.user_id
+            throw new UserPermissionDenied();
         }
 
 
@@ -127,17 +129,31 @@ async function edit(id, data, user_id) {
 }
 
 
-async function remove(id) {
+async function remove(id, user_id) {
     try {
-        const response = await ObjectModel.destroy({
-            where: { object_id: id }
-        });
+
+        const object = await ObjectModel.findByPk(id)
+
+        if (!object) {
+            const error = new Error('Objeto no encontrado');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (user_id !== object.object_donor_id) {
+            throw new UserPermissionDenied();
+        }
+
+        const response = await object.destroy();
+
         if (response === 0) {
             const error = new Error('Id no encontrado');
             error.statusCode = 404;
             throw error;
         }
+
         return response;
+
     } catch (error) {
         throw error; // Envío el error al controlador API
     }

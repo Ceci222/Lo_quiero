@@ -4,7 +4,7 @@ import pickupController from "./pickupController.js"
 
 async function create(req, res) {
     try {
-        const result =  await pickupController.create(req.body);
+        const result =  await pickupController.create(req.body, req.user.user_id);
         res.json(result);
     } catch (error) { 
         console.error(error);
@@ -45,7 +45,7 @@ async function getById(req, res) {
 async function edit(req, res) {
     try {
         const id = req.params.id; 
-        const result = await pickupController.edit(id, req.body);
+        const result = await pickupController.edit(id, req.body, req.user.user_id);
         res.json(result);
 
     } catch (error) {
@@ -63,15 +63,16 @@ async function edit(req, res) {
 async function remove(req, res) {
     try {
         const id = req.params.id; 
-        const response = await pickupController.remove(id);
+        const response = await pickupController.remove(id, req.user.user_id);
         res.json(response);
 
-    }catch (error) {
-        console.error(error)
-        res.status(500).json({ error: "Error del servidor" });
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message });
     }
     
 }
+
 
 export default {
     getAll,

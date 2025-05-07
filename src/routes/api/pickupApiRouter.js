@@ -7,9 +7,9 @@ router.get("/", pickupApiController.getAll);
 
 router.get("/:id", pickupApiController.getById); 
 
-router.post("/", pickupApiController.create); 
+router.post("/",  isLoggedInAPI, pickupApiController.create); 
 
-router.put("/:id", pickupApiController.edit);
+router.put("/:id",  isLoggedInAPI, pickupApiController.edit);
 
 router.delete("/:id", pickupApiController.remove);
 

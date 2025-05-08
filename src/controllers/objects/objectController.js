@@ -223,11 +223,47 @@ async function accept(object_id, user_id) {
     }
 }
 
+async function reject(object_id, user_id) {
+    try {
+        const object = await ObjectModel.findByPk(object_id);
+
+        if (!object) {
+            const error = new Error('Objeto no encontrado');
+            error.statusCode = 404;
+            throw error;
+        }
+        if (object.object_state !== 'Reservado') {
+            const error = new Error('Objeto no reservado');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (user_id !== object.object_recipient_id) {
+            throw new UserPermissionDenied();
+        }
+
+        await object.update({ object_recipient_id: null, object_state: 'Disponible' });
+        
+        return await ObjectModel.findByPk(object_id, {
+            include: [
+                { model: User, as: 'Donor', attributes: { exclude: ['user_pwd'] } },
+                { model: User, as: 'Recipient', attributes: { exclude: ['user_pwd'] } },
+                { model: Pickup, as: 'Pickup' }
+            ]
+        });
+    } catch (error) {
+        throw error;
+    }
+    
+    
+}
+
 export default {
     getAll,
     getById,
     create,
     edit,
     remove,
-    accept
+    accept,
+    reject
 };

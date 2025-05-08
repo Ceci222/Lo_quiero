@@ -50,6 +50,17 @@ async function accept(req, res) {
     }
 }
 
+async function reject(req, res) {
+    try {
+        const object_id = req.params.id; 
+        const result = await objectController.reject(object_id, req.user.user_id);
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message });
+    }
+}
+
 async function edit(req, res) {
     try {
         const object_id = req.params.id;
@@ -90,5 +101,6 @@ export default {
     create,
     edit,
     remove,
-    accept
+    accept,
+    reject
 };

@@ -12,6 +12,8 @@ router.post("/", isLoggedInAPI, objectApiController.create); //sólo indicar la 
 
 router.post("/:id/accept", isLoggedInAPI, objectApiController.accept);
 
+router.post("/:id/reject", isLoggedInAPI, objectApiController.reject);
+
 router.put("/:id",isLoggedInAPI, objectApiController.edit);
 
 router.delete("/:id", isLoggedInAPI, objectApiController.remove);

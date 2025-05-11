@@ -2,12 +2,34 @@ import userController from "./userController.js"
 
 
 async function getProfile(req, res) {
-    try {
+    try {getDonations
         const user = await userController.getProfile(req.user.user_id);// JWT, extrae el user_id del usuario logueado y lo guarda en req.user = { user_id }
         res.json(user)
     } catch (error) {
         console.error(error);
         res.status(error.statusCode || 500).json({ error: error.message }); //res.status(error.statusCode para que recoja y reutilice el error personalizado de user
+    }
+}
+
+
+async function getDonations(req, res) {
+    try {
+        const donations = await userController.getDonations(req.user.user_id);
+        res.json(donations)
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message }); 
+    }
+}
+
+
+async function getPickups(req, res) {
+    try {
+        const pickups = await userController.getPickups(req.user.user_id);
+        res.json(pickups)
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ error: error.message }); 
     }
 }
 
@@ -78,5 +100,7 @@ export default {
     create,
     remove,
     edit,
-    getProfile
+    getProfile, 
+    getDonations,
+    getPickups
 }

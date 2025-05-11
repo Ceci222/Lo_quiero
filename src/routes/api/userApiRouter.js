@@ -5,7 +5,12 @@ import isLoggedInAPI from '../../middlewares/authMiddleware.js';
 
 router.get("/", userApiController.getAll);   //indicar la ruta en app.js, definir controller y método correspondiente
 
-router.get("/:id",userApiController.getById);
+
+router.get("/donations", isLoggedInAPI, userApiController.getDonations);
+
+router.get("/pickups", isLoggedInAPI, userApiController.getPickups);
+
+router.get("/:id",userApiController.getById); //debe estar por debajo del resto de las rutas o va a buscar el user con id "donations" o "pickup" y va a dar no encontrado
 
 router.get("/profile/:id", isLoggedInAPI, userApiController.getProfile);  //pasar el middleware a la ruta que quiero proteger
 

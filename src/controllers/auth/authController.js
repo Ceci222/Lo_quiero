@@ -57,7 +57,7 @@ async function register(data) {
 }
 
 async function login(data) {
-    if (!data.user_name && !data.user_email) throw new UserEmailNotProvided();
+    if (!data.user_name && !data.user_email) throw new Error('Debe proporcionar email o nombre de usuario');
     if (!data.user_pwd) throw new UserPasswordNotProvided();
     const user = await User.findOne({
         where: {
@@ -71,7 +71,7 @@ async function login(data) {
 
     const token = createToken({ user_id: user.user_id });
 
-    return { token };
+    return { token, user_name: user.user_name};
 }
 
 export default { register, login };

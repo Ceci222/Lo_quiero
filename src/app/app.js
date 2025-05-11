@@ -2,13 +2,14 @@ import express from "express";
 import dotenv from "dotenv";
 import router from "../routes/api/apiRouter.js";
 import '../models/associations.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const APP_PORT = process.env.APP_PORT;
 const app = express();
 
-
+app.use(cors()); 
 
 app.get('/test', (req, res) => {  
     res.send('¡Funciona!');

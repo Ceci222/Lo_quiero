@@ -25,9 +25,14 @@ INSERT INTO `object` (`object_name`, `object_description`, `object_img`, `object
 ('Escritorio', 'Escritorio pequeño', 'https://images.unsplash.com/photo-1600585153490-76fb20a0d90b', 'Reservado', 2, 1);
 
 INSERT INTO `pickup` (`pickup_object_id`, `pickup_area`, `pickup_start_date`, `pickup_end_date`) VALUES
+(1, 'Bilbao', '2025-05-12', '2025-05-16'),
 (2, 'Bilbao', '2025-04-21', '2025-04-25'),
+(3, 'Vitoria', '2025-05-13', '2025-05-17'),
 (4, 'Burgos', '2025-04-22', '2025-04-26'),
+(5, 'Santander', '2025-05-14', '2025-05-18'),
 (6, 'Laredo', '2025-04-23', '2025-04-27'),
+(7, 'Logroño', '2025-05-15', '2025-05-19'),
 (8, 'Sestao', '2025-04-24', '2025-04-28'),
+(9, 'Pamplona', '2025-05-16', '2025-05-20'),
 (10, 'Madrid', '2025-04-25', '2025-04-29');
 

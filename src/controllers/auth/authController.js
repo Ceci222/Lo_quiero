@@ -50,11 +50,15 @@ async function register(data) {
         user_pwd: hashedPwd
     });
 
+    const token = createToken({ user_id: user.user_id }); //pasar args a la funcion en token.js
+    return { token, user: await User.findByPk(user.user_id, { attributes: { exclude: ['user_pwd'] } }) };
+
+
     // Devolver el usuario sin la contraseña
-    return await User.findByPk(user.user_id, {
+    /* return await User.findByPk(user.user_id, {
         attributes: { exclude: ['user_pwd'] }
-    });
-}
+    });*/
+} 
 
 async function login(data) {
     if (!data.user_name && !data.user_email) throw new Error('Debe proporcionar email o nombre de usuario');
@@ -75,5 +79,4 @@ async function login(data) {
 }
 
 export default { register, login };
-
 

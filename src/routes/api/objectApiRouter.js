@@ -4,11 +4,13 @@ import isLoggedInAPI from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get("/", objectApiController.getAll);   //TODO: indicar la ruta en app.js, definir controller y método correspondiente
+router.get("/", objectApiController.getAll);  
+
+router.get("/available", isLoggedInAPI, objectApiController.getAvailableForUser); //el id viene del token
 
 router.get("/:id",objectApiController.getById);
 
-router.post("/", isLoggedInAPI, objectApiController.create); //sólo indicar la ruta que lleva a la función que tiene que usar
+router.post("/", isLoggedInAPI, objectApiController.create); 
 
 router.post("/:id/accept", isLoggedInAPI, objectApiController.accept);
 

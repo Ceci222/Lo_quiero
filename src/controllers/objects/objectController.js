@@ -3,6 +3,7 @@ import User from '../../models/user.js';
 import ObjectModel from '../../models/object.js';
 import { UserPermissionDenied } from '../../utils/errors.js';
 import connection from '../../config/sequelize.js';
+import { Op } from 'sequelize';
 
 
 async function getAll() {
@@ -26,6 +27,26 @@ async function getAll() {
     }
 }
 
+async function getAvailableForUser(user_id) {
+  try {
+    const objects = await ObjectModel.findAll({
+      where: {
+        object_state: 'Disponible',
+        object_donor_id: { [Op.ne]: user_id } // Op para consultar con where y ne para indicar q sea distinto
+      },
+      include: [
+        { model: User, as: 'Donor' },
+        { model: User, as: 'Recipient' },
+        { model: Pickup, as: 'Pickup' }
+      ]
+    });
+
+    return objects;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+}
 
 async function getById(id) {
     try {
@@ -260,6 +281,7 @@ async function reject(object_id, user_id) {
 
 export default {
     getAll,
+    getAvailableForUser,
     getById,
     create,
     edit,

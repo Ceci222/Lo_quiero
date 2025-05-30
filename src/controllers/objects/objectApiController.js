@@ -12,6 +12,18 @@ async function getAll(req, res) {
      
 }
 
+export async function getAvailableForUser(req, res) {
+  try {
+    const user_id = req.user.id; // desde middleware auth
+    const objects = await objectController.getAll(user_id);
+    res.json(objects);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener objetos disponibles para el usuario' });
+  }
+}
+
+
 async function getById(req, res) {
     try {
         const id = req.params.id;
@@ -97,6 +109,7 @@ async function remove(req, res) {
 
 export default {
     getAll,
+    getAvailableForUser,
     getById,
     create,
     edit,

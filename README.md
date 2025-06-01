@@ -2,39 +2,46 @@
 
 ## Descripción General
 
-Inspirada en el grupo de facebook "Si lo venís a buscar es tuyo".
+Inspirada en el grupo de Facebook *"Si lo venís a buscar es tuyo"*, esta API promueve la economía circular y facilita el intercambio gratuito de objetos entre personas, fomentando la reutilización y reduciendo residuos. A través de esta plataforma, los usuarios pueden ofrecer artículos que ya no necesitan y donar objetos a otros de manera sencilla y accesible.
 
-El objetivo de esta API es promover la economía circular y facilitar el intercambio gratuito de objetos entre personas, promoviendo la reutilización y reduciendo residuos. 
+La API gestiona usuarios, objetos y recogidas para una plataforma de donaciones. Está desarrollada con **Express.js**, **Sequelize** para consultas a la base de datos, y **JWT** para autenticación. Actualmente, no está desplegada y se ejecuta localmente con **Docker**.
 
-A través de esta plataforma, los usuarios pueden ofrecer artículos que ya no necesitan y donar objetos a otros de manera sencilla y accesible.
+## Índice
 
-Esta API gestiona usuarios, objetos y recogidas para una plataforma de donaciones. 
-
-Está desarrollada con Express.js, sequelize para realizar las consultas a la base de datos y JWT para la autenticación. Aún no se encuentra desplegada, por lo que se ejecuta localmente con Docker.
+- [URL Base](#url-base)
+- [Autenticación](#autenticación)
+- [Endpoints](#endpoints)
+  - [Autenticación](#autenticación-1)
+  - [Usuarios](#usuarios)
+  - [Objetos](#objetos)
+  - [Recogidas](#recogidas)
+  - [Cloudinary](#cloudinary)
+- [Manejo de Errores](#manejo-de-errores)
+- [Instrucciones de Configuración](#instrucciones-de-configuración)
+- [Ejemplo de Uso](#ejemplo-de-uso)
 
 ## URL Base
 
-``` 
+```
 http://localhost:3001
 ```
 
 ## Autenticación
 
-- **Token JWT**: Requerido para rutas protegidas (ej. `/user/profile`).
-
+- **Token JWT**: Requerido para rutas protegidas (por ejemplo, `/user/profile/:id`, `/object/:id/accept`).
 - **Cómo autenticarse**:
-
   1. Usa `POST /login` o `POST /register` para obtener un token.
   2. Incluye el token en el encabezado `Authorization` para rutas protegidas:
+     ```
+     Authorization: <token>
+     ```
 
-    ```
-    Authorization: <token> 
-    ```
 ## Endpoints
 
-### **Autenticación**
+### Autenticación
 
 #### **POST /register**
+
 Registra un nuevo usuario.
 
 - **Cuerpo** (JSON):
@@ -46,15 +53,18 @@ Registra un nuevo usuario.
   }
   ```
 - **Respuestas**:
-  - `200 OK`: Usuario creado.
+  - `201 Created`: Usuario creado.
     ```json
     {
-      "user_id": 1,
-      "user_name": "juan",
-      "user_email": "juan@ejemplo.com"
+      "token": "jwt_token",
+      "user": {
+        "user_id": 1,
+        "user_name": "juan",
+        "user_email": "juan@ejemplo.com"
+      }
     }
     ```
-  - `400 Bad Request`: Faltan campos o `user_name`/`user_email` duplicados.
+  - `400 Bad Request`: Faltan campos, formato inválido (email o contraseña), o `user_name`/`user_email` duplicados.
     ```json
     { "error": "Nombre de usuario ya existe" }
     ```
@@ -64,6 +74,7 @@ Registra un nuevo usuario.
     ```
 
 #### **POST /login**
+
 Inicia sesión y devuelve un token JWT.
 
 - **Cuerpo** (JSON):
@@ -76,20 +87,24 @@ Inicia sesión y devuelve un token JWT.
 - **Respuestas**:
   - `200 OK`: Inicio de sesión exitoso.
     ```json
-    { "token": "jwt_token" }
+    {
+      "token": "jwt_token",
+      "user_name": "juan"
+    }
     ```
-  - `401 Unauthorized`: Credenciales inválidas.
+  - `400 Bad Request`: Faltan campos o credenciales inválidas.
     ```json
-    { "error": "Credenciales incorrectas" }
+    { "error": "Debe proporcionar email o nombre de usuario" }
     ```
-  - `400 Bad Request`: Faltan `user_email`/`user_name` o `user_pwd`.
+  - `500 Internal Server Error`: Error del servidor.
     ```json
-    { "error": "Ingresa un correo" }
+    { "error": "Error del servidor" }
     ```
 
-### **Usuarios**
+### Usuarios
 
 #### **GET /user**
+
 Obtiene todos los usuarios.
 
 - **Respuestas**:
@@ -115,6 +130,7 @@ Obtiene todos los usuarios.
     ```
 
 #### **GET /user/:id**
+
 Obtiene un usuario por ID.
 
 - **Parámetros**:
@@ -139,11 +155,14 @@ Obtiene un usuario por ID.
     { "error": "Error del servidor" }
     ```
 
-#### **GET /user/profile**
+#### **GET /user/profile/:id**
+
 Obtiene el perfil del usuario autenticado.
 
 - **Encabezados**:
   - `Authorization: <token>`
+- **Parámetros**:
+  - `id` (ruta): ID del usuario (entero).
 - **Respuestas**:
   - `200 OK`: Perfil del usuario.
     ```json
@@ -168,7 +187,73 @@ Obtiene el perfil del usuario autenticado.
     { "error": "Error del servidor" }
     ```
 
+#### **GET /user/donations**
+
+Obtiene los objetos donados por el usuario autenticado.
+
+- **Encabezados**:
+  - `Authorization: <token>`
+- **Respuestas**:
+  - `200 OK`: Lista de objetos donados.
+    ```json
+    [
+      {
+        "object_id": 1,
+        "object_name": "Libro",
+        "object_description": "Una novela",
+        "object_img": "url",
+        "object_state": "Disponible",
+        "Donor": { "user_id": 1, "user_name": "juan" },
+        "Recipient": null,
+        "Pickup": null
+      }
+    ]
+    ```
+  - `404 Not Found`: No se encontraron donaciones.
+    ```json
+    { "error": "No se encontraron donaciones asociadas a este usuario" }
+    ```
+  - `500 Internal Server Error`: Error del servidor.
+    ```json
+    { "error": "Error del servidor" }
+    ```
+
+#### **GET /user/pickups**
+
+Obtiene las recogidas asociadas al usuario autenticado.
+
+- **Encabezados**:
+  - `Authorization: <token>`
+- **Respuestas**:
+  - `200 OK`: Lista de recogidas.
+    ```json
+    [
+      {
+        "pickup_id": 1,
+        "pickup_area": "Centro",
+        "pickup_start_date": "2025-05-01",
+        "pickup_end_date": "2025-05-02",
+        "pickup_object_id": 1,
+        "ObjectModel": {
+          "object_id": 1,
+          "object_name": "Libro",
+          "Donor": { "user_id": 2, "user_name": "ana" },
+          "Recipient": { "user_id": 1, "user_name": "juan" }
+        }
+      }
+    ]
+    ```
+  - `404 Not Found`: No se encontraron recogidas.
+    ```json
+    { "error": "No se encontraron recogidas asociadas a este usuario" }
+    ```
+  - `500 Internal Server Error`: Error del servidor.
+    ```json
+    { "error": "Error del servidor" }
+    ```
+
 #### **POST /user**
+
 Crea un nuevo usuario.
 
 - **Cuerpo** (JSON):
@@ -188,7 +273,7 @@ Crea un nuevo usuario.
       "user_email": "juan@ejemplo.com"
     }
     ```
-  - `400 Bad Request`: Faltan campos.
+  - `400 Bad Request`: Faltan campos o formato inválido.
     ```json
     { "error": "Ingresa un nombre de usuario" }
     ```
@@ -198,6 +283,7 @@ Crea un nuevo usuario.
     ```
 
 #### **PUT /user/:id**
+
 Actualiza un usuario.
 
 - **Parámetros**:
@@ -231,6 +317,7 @@ Actualiza un usuario.
     ```
 
 #### **DELETE /user/:id**
+
 Elimina un usuario.
 
 - **Parámetros**:
@@ -249,9 +336,10 @@ Elimina un usuario.
     { "error": "Error del servidor" }
     ```
 
-### **Objetos**
+### Objetos
 
 #### **GET /object**
+
 Obtiene todos los objetos.
 
 - **Respuestas**:
@@ -263,7 +351,7 @@ Obtiene todos los objetos.
         "object_name": "Libro",
         "object_description": "Una novela",
         "object_img": "url",
-        "object_state": "",
+        "object_state": "Disponible",
         "Donor": { "user_id": 1, "user_name": "juan" },
         "Recipient": null,
         "Pickup": null
@@ -272,14 +360,42 @@ Obtiene todos los objetos.
     ```
   - `404 Not Found`: No se encontraron objetos.
     ```json
-    { "error": "No se encontraron objetos" }
+    { "error": "Objetos no encontrados" }
     ```
   - `500 Internal Server Error`: Error del servidor.
     ```json
     { "error": "Error del servidor" }
     ```
 
+#### **GET /object/available**
+
+Obtiene los objetos disponibles para el usuario autenticado (excluye los donados por el propio usuario).
+
+- **Encabezados**:
+  - `Authorization: <token>`
+- **Respuestas**:
+  - `200 OK`: Lista de objetos disponibles.
+    ```json
+    [
+      {
+        "object_id": 1,
+        "object_name": "Libro",
+        "object_description": "Una novela",
+        "object_img": "url",
+        "object_state": "Disponible",
+        "Donor": { "user_id": 2, "user_name": "ana" },
+        "Recipient": null,
+        "Pickup": null
+      }
+    ]
+    ```
+  - `500 Internal Server Error`: Error del servidor.
+    ```json
+    { "error": "Error al obtener objetos disponibles para el usuario" }
+    ```
+
 #### **GET /object/:id**
+
 Obtiene un objeto por ID.
 
 - **Parámetros**:
@@ -308,17 +424,20 @@ Obtiene un objeto por ID.
     ```
 
 #### **POST /object**
+
 Crea un nuevo objeto.
 
+- **Encabezados**:
+  - `Authorization: <token>`
 - **Cuerpo** (JSON):
   ```json
   {
     "object_name": "string",
     "object_description": "string",
     "object_img": "string",
-    "object_state": "string",
-    "object_donor_id": integer,
-    "object_recipient_id": integer // opcional
+    "pickup_area": "string",
+    "pickup_start_date": "string",
+    "pickup_end_date": "string"
   }
   ```
 - **Respuestas**:
@@ -329,12 +448,18 @@ Crea un nuevo objeto.
       "object_name": "Libro",
       "object_description": "Una novela",
       "object_img": "url",
-      "object_state": "Reservado", //sólo admite "Disponible" o "Reservado"
+      "object_state": "Disponible",
       "Donor": { "user_id": 1, "user_name": "juan" },
-      "Recipient": null
+      "Recipient": null,
+      "Pickup": {
+        "pickup_id": 1,
+        "pickup_area": "Centro",
+        "pickup_start_date": "2025-05-01",
+        "pickup_end_date": "2025-05-02"
+      }
     }
     ```
-  - `400 Bad Request`: Faltan campos o `object_donor_id`/`object_recipient_id` inválidos.
+  - `400 Bad Request`: Faltan campos o datos inválidos.
     ```json
     { "error": "Indique de qué objeto se trata" }
     ```
@@ -343,9 +468,82 @@ Crea un nuevo objeto.
     { "error": "Error del servidor" }
     ```
 
-#### **PUT /object/:id**
-Actualiza un objeto.
+#### **POST /object/:id/accept**
 
+Reserva un objeto, cambiando su estado a "Reservado".
+
+- **Encabezados**:
+  - `Authorization: <token>`
+- **Parámetros**:
+  - `id` (ruta): ID del objeto (entero).
+- **Respuestas**:
+  - `200 OK`: Objeto reservado.
+    ```json
+    {
+      "object_id": 1,
+      "object_name": "Libro",
+      "object_description": "Una novela",
+      "object_img": "url",
+      "object_state": "Reservado",
+      "Donor": { "user_id": 2, "user_name": "ana" },
+      "Recipient": { "user_id": 1, "user_name": "juan" },
+      "Pickup": null
+    }
+    ```
+  - `400 Bad Request`: Objeto no disponible o usuario es el donante.
+    ```json
+    { "error": "Objeto no disponible" }
+    ```
+  - `404 Not Found`: Objeto no encontrado.
+    ```json
+    { "error": "Objeto no encontrado" }
+    ```
+  - `500 Internal Server Error`: Error del servidor.
+    ```json
+    { "error": "Error del servidor" }
+    ```
+
+#### **POST /object/:id/reject**
+
+Cancela la reserva de un objeto, devolviéndolo a "Disponible".
+
+- **Encabezados**:
+  - `Authorization: <token>`
+- **Parámetros**:
+  - `id` (ruta): ID del objeto (entero).
+- **Respuestas**:
+  - `200 OK`: Reserva cancelada.
+    ```json
+    {
+      "object_id": 1,
+      "object_name": "Libro",
+      "object_description": "Una novela",
+      "object_img": "url",
+      "object_state": "Disponible",
+      "Donor": { "user_id": 2, "user_name": "ana" },
+      "Recipient": null,
+      "Pickup": null
+    }
+    ```
+  - `400 Bad Request`: Objeto no reservado o usuario no autorizado.
+    ```json
+    { "error": "Objeto no reservado" }
+    ```
+  - `404 Not Found`: Objeto no encontrado.
+    ```json
+    { "error": "Objeto no encontrado" }
+    ```
+  - `500 Internal Server Error`: Error del servidor.
+    ```json
+    { "error": "Error del servidor" }
+    ```
+
+#### **PUT /object/:id**
+
+Actualiza un objeto (solo por el donante).
+
+- **Encabezados**:
+  - `Authorization: <token>`
 - **Parámetros**:
   - `id` (ruta): ID del objeto (entero).
 - **Cuerpo** (JSON):
@@ -353,11 +551,7 @@ Actualiza un objeto.
   {
     "object_name": "string",
     "object_description": "string",
-    "object_img": "string",
-    "object_state": "string" //admite "Disponible" o "Reservado"
-    
-    //pickup se devuelve pero no admite actualizaciones desde este endpoint
-    
+    "object_img": "string"
   }
   ```
 - **Respuestas**:
@@ -365,14 +559,18 @@ Actualiza un objeto.
     ```json
     {
       "object_id": 1,
-      "object_name": "Libro",
+      "object_name": "Libro actualizado",
       "object_description": "Una novela",
       "object_img": "url",
-      "object_state": "Disponible", 
+      "object_state": "Disponible",
       "Donor": { "user_id": 1, "user_name": "juan" },
       "Recipient": null,
       "Pickup": null
     }
+    ```
+  - `400 Bad Request`: Campos inválidos o usuario no autorizado.
+    ```json
+    { "error": "Campos inválidos: object_state" }
     ```
   - `404 Not Found`: Objeto no encontrado.
     ```json
@@ -384,8 +582,11 @@ Actualiza un objeto.
     ```
 
 #### **DELETE /object/:id**
-Elimina un objeto.
 
+Elimina un objeto (solo por el donante).
+
+- **Encabezados**:
+  - `Authorization: <token>`
 - **Parámetros**:
   - `id` (ruta): ID del objeto (entero).
 - **Respuestas**:
@@ -395,16 +596,21 @@ Elimina un objeto.
     ```
   - `404 Not Found`: Objeto no encontrado.
     ```json
-    { "error": "Id no encontrado" }
+    { "error": "Objeto no encontrado" }
+    ```
+  - `403 Forbidden`: Usuario no autorizado.
+    ```json
+    { "error": "Permiso denegado" }
     ```
   - `500 Internal Server Error`: Error del servidor.
     ```json
     { "error": "Error del servidor" }
     ```
 
-### **Recogidas**
+### Recogidas
 
 #### **GET /pickup**
+
 Obtiene todas las recogidas.
 
 - **Respuestas**:
@@ -421,16 +627,13 @@ Obtiene todas las recogidas.
       }
     ]
     ```
-  - `404 Not Found`: No se encontraron recogidas.
-    ```json
-    { "error": "No se encontraron registros" }
-    ```
   - `500 Internal Server Error`: Error del servidor.
     ```json
     { "error": "Error del servidor" }
     ```
 
 #### **GET /pickup/:id**
+
 Obtiene una recogida por ID.
 
 - **Parámetros**:
@@ -447,18 +650,17 @@ Obtiene una recogida por ID.
       "ObjectModel": { "object_id": 1, "object_name": "Libro" }
     }
     ```
-  - `404 Not Found`: Recogida no encontrada.
-    ```json
-    { "error": "Recogida no encontrada" }
-    ```
   - `500 Internal Server Error`: Error del servidor.
     ```json
     { "error": "Error del servidor" }
     ```
 
 #### **POST /pickup**
+
 Crea una nueva recogida.
 
+- **Encabezados**:
+  - `Authorization: <token>`
 - **Cuerpo** (JSON):
   ```json
   {
@@ -490,8 +692,11 @@ Crea una nueva recogida.
     ```
 
 #### **PUT /pickup/:id**
+
 Actualiza una recogida.
 
+- **Encabezados**:
+  - `Authorization: <token>`
 - **Parámetros**:
   - `id` (ruta): ID de la recogida (entero).
 - **Cuerpo** (JSON):
@@ -504,17 +709,13 @@ Actualiza una recogida.
   }
   ```
 - **Respuestas**:
-  - `200 OK`: Número de recogidas actualizadas (1 o 0).
+  - `200 OK`: Recogida actualizada.
     ```json
     1
     ```
-  - `400 Bad Request`: Fechas inválidas.
+  - `400 Bad Request`: Fechas inválidas o datos incorrectos.
     ```json
     { "error": "Fecha inicial inválida" }
-    ```
-  - `404 Not Found`: Recogida no encontrada.
-    ```json
-    { "error": "Información de recogida no encontrada" }
     ```
   - `500 Internal Server Error`: Error del servidor.
     ```json
@@ -522,8 +723,11 @@ Actualiza una recogida.
     ```
 
 #### **DELETE /pickup/:id**
+
 Elimina una recogida.
 
+- **Encabezados**:
+  - `Authorization: <token>`
 - **Parámetros**:
   - `id` (ruta): ID de la recogida (entero).
 - **Respuestas**:
@@ -531,13 +735,28 @@ Elimina una recogida.
     ```json
     1
     ```
-  - `404 Not Found`: Recogida no encontrada.
-    ```json
-    { "error": "Recogida no encontrada" }
-    ```
   - `500 Internal Server Error`: Error del servidor.
     ```json
     { "error": "Error del servidor" }
+    ```
+
+### Cloudinary
+
+#### **GET /cloudinary/config**
+
+Obtiene la configuración de Cloudinary para subir imágenes.
+
+- **Respuestas**:
+  - `200 OK`: Configuración de Cloudinary.
+    ```json
+    {
+      "cloud_name": "string",
+      "upload_preset": "string"
+    }
+    ```
+  - `500 Internal Server Error`: Error del servidor.
+    ```json
+    { "error": "Error interno" }
     ```
 
 ## Manejo de Errores
@@ -549,8 +768,10 @@ Los errores devuelven un objeto JSON con un campo `error`:
 
 Códigos de estado comunes:
 - `200 OK`: Éxito.
+- `201 Created`: Recurso creado.
 - `400 Bad Request`: Parámetros inválidos o ausentes.
 - `401 Unauthorized`: Token inválido o ausente.
+- `403 Forbidden`: Permiso denegado.
 - `404 Not Found`: Recurso no encontrado.
 - `500 Internal Server Error`: Error del servidor.
 
@@ -558,8 +779,8 @@ Códigos de estado comunes:
 
 1. **Clonar el Repositorio**:
    ```bash
-   git clone <url_del_repositorio>
-   cd <directorio_del_repositorio>
+   git clone https://github.com/Ceci222/Lo_quiero.git
+   cd Lo_quiero
    ```
 
 2. **Instalar Dependencias**:
@@ -580,6 +801,8 @@ Códigos de estado comunes:
      DB_PASSWORD=****
      NODE_ENV=development
      JWT_SECRET=****
+     CLOUDINARY_CLOUD_NAME=****
+     CLOUDINARY_UPLOAD_PRESET=****
      ```
 
 4. **Ejecutar con Docker**:
@@ -588,13 +811,13 @@ Códigos de estado comunes:
    ```
 
 5. **Acceder a la API**:
-   - Abre `http://localhost:3001` en el navegador o postman
+   - Abre `http://localhost:3001` en un navegador o en Postman.
 
 ## Ejemplo de Uso (Postman)
 
 1. **Registrar un Usuario**:
    - **Solicitud**:
-     ```
+     ```http
      POST http://localhost:3001/register
      Content-Type: application/json
      {
@@ -606,15 +829,18 @@ Códigos de estado comunes:
    - **Respuesta**:
      ```json
      {
-       "user_id": 1,
-       "user_name": "juan",
-       "user_email": "juan@ejemplo.com"
+       "token": "jwt_token",
+       "user": {
+         "user_id": 1,
+         "user_name": "juan",
+         "user_email": "juan@ejemplo.com"
+       }
      }
      ```
 
 2. **Iniciar Sesión**:
    - **Solicitud**:
-     ```
+     ```http
      POST http://localhost:3001/login
      Content-Type: application/json
      {
@@ -624,13 +850,16 @@ Códigos de estado comunes:
      ```
    - **Respuesta**:
      ```json
-     { "token": "jwt_token" }
+     {
+       "token": "jwt_token",
+       "user_name": "juan"
+     }
      ```
 
 3. **Obtener Perfil del Usuario**:
    - **Solicitud**:
-     ```
-     GET http://localhost:3001/user/profile
+     ```http
+     GET http://localhost:3001/user/profile/1
      Authorization: <jwt_token>
      ```
    - **Respuesta**:
@@ -644,3 +873,36 @@ Códigos de estado comunes:
      }
      ```
 
+4. **Crear un Objeto**:
+   - **Solicitud**:
+     ```http
+     POST http://localhost:3001/object
+     Authorization: <jwt_token>
+     Content-Type: application/json
+     {
+       "object_name": "Libro",
+       "object_description": "Una novela",
+       "object_img": "url",
+       "pickup_area": "Centro",
+       "pickup_start_date": "2025-05-01",
+       "pickup_end_date": "2025-05-02"
+     }
+     ```
+   - **Respuesta**:
+     ```json
+     {
+       "object_id": 1,
+       "object_name": "Libro",
+       "object_description": "Una novela",
+       "object_img": "url",
+       "object_state": "Disponible",
+       "Donor": { "user_id": 1, "user_name": "juan" },
+       "Recipient": null,
+       "Pickup": {
+         "pickup_id": 1,
+         "pickup_area": "Centro",
+         "pickup_start_date": "2025-05-01",
+         "pickup_end_date": "2025-05-02"
+       }
+     }
+     ```

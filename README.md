@@ -814,7 +814,7 @@ Códigos de estado comunes:
    - Abre `http://localhost:3001` en un navegador o en Postman.
 
 ## Ejemplo de Uso 
-###Postman:
+Postman:
 
 1. **Registrar un Usuario**:
    - **Solicitud**:

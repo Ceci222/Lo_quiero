@@ -813,7 +813,8 @@ Códigos de estado comunes:
 5. **Acceder a la API**:
    - Abre `http://localhost:3001` en un navegador o en Postman.
 
-## Ejemplo de Uso (Postman)
+## Ejemplo de Uso 
+###Postman:
 
 1. **Registrar un Usuario**:
    - **Solicitud**:
